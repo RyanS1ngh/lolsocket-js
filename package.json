@@ -1,6 +1,6 @@
 {
   "name": "lolsocket-js",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "lolsocket module for servers",
   "main": "index.js",
   "scripts": {
