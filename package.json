@@ -1,5 +1,5 @@
 {
-  "name": "lolsocket-js",
+  "name": "lolsocket",
   "version": "1.0.1",
   "description": "lolsocket module for servers",
   "main": "index.js",
@@ -14,12 +14,16 @@
     "lolsocket"
   ],
   "author": "Ryan Singh",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/RyanS1ngh/lolsocket-js/issues"
   },
   "homepage": "https://github.com/RyanS1ngh/lolsocket-js#readme",
   "dependencies": {
     "ws": "^8.14.2"
-  }
+  },
+  "directories": {
+    "lib": "lib"
+  },
+  "devDependencies": {}
 }
