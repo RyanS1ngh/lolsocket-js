@@ -54,6 +54,8 @@ class LOL {
 
     trigger(channel, type,  message) {
         const isClient = channel.startsWith('client-');
+        // first subscribe to the channel
+        this.subscribe(channel);
         if(isClient){
             const data = {
                 type: 'client-publish',

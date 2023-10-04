@@ -1,5 +1,5 @@
 {
-  "name": "lolsocket",
+  "name": "lolsocket-js",
   "version": "1.0.3",
   "description": "lolsocket module for servers",
   "main": "index.js",
