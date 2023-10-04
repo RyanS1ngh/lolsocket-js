@@ -37,10 +37,39 @@ class LOL {
 
     subscribe(channel) {
         const channelKey = `${this.apiKey}-${channel}`;
+
+        // Check if the channel is already subscribed
         if (!this.channels[channelKey]) {
             this.channels[channelKey] = [];
+        } else {
+            // If already subscribed, return the existing subscription
+            return {
+                bind: (type, callback) => {
+                    this.channels[channelKey].push((message) => {
+                        if (message.emit_type === type) {
+                            callback(message.data);
+                        }
+                    });
+                }
+            };
         }
 
+        // Send a subscribe message to the server
+        const data = {
+            type: 'subscribe',
+            channel: channelKey,
+            secret: this.apiSecret,
+            token: this.token
+        };
+
+        // Error handling for socket connection status
+        if (this.socket.readyState === WebSocket.OPEN) {
+            this.socket.send(JSON.stringify(data));
+        } else {
+            console.error('Socket connection is not open. Cannot send subscribe message.');
+        }
+
+        // Return the subscription object with bind method
         return {
             bind: (type, callback) => {
                 this.channels[channelKey].push((message) => {
@@ -52,28 +81,31 @@ class LOL {
         };
     }
 
-    trigger(channel, type,  message) {
+
+    trigger(channel, type, message) {
         const isClient = channel.startsWith('client-');
         // first subscribe to the channel
         this.subscribe(channel);
-        if(isClient){
+        if (isClient) {
             const data = {
                 type: 'client-publish',
                 emit_type: type,
                 channel: `${this.apiKey}-${channel}`,
                 content: message,
                 secret: this.apiSecret,
+                sender: this.userID,
                 token: this.token
             };
-            
+
             this.socket.send(JSON.stringify(data));
-        }else if(!isClient){
+        } else if (!isClient) {
             const data = {
                 type: 'publish',
                 emit_type: type,
                 channel: `${this.apiKey}-${channel}`,
                 content: message,
                 secret: this.apiSecret,
+                sender: this.userID,
                 token: this.token
             };
 
