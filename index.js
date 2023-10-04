@@ -6,7 +6,7 @@ class LOL {
         this.apiKey = API_KEY;
         this.apiSecret = API_SECRET;
         if(TLS) {
-            const url = `wss://ws.kolabi.pro:3000/${API_KEY}`;
+            const url = `wss://ws.kolabi.pro:4000/${API_KEY}`;
             this.socket = new WebSocket(url);
         } else {
             const url = `ws://ws.kolabi.pro:3000/${API_KEY}`;
