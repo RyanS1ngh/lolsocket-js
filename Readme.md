@@ -72,8 +72,7 @@ The connection is automatically closed if the received token is invalid.
 
 ## Test API Keys
 
-ApiKey "K23AVG0UU8B96WR27612"
-ApiSecret "PG76UNTD4AOOX3RCFNWWUXNP75NJD3H22"
+[Contact me](mailto:ryan@lolcorp.co.uk) for test API Keys at ryan@lolcorp.co.uk
 
 ### Important Notes
 
