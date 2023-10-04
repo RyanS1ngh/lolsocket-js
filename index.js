@@ -2,21 +2,25 @@ const WebSocket = require('ws');
 const { verifyToken } = require('./lib/auth');
 
 class LOL {
-    constructor({ API_KEY, API_SECRET }) {
+    constructor({ API_KEY, API_SECRET, TLS }) {
         this.apiKey = API_KEY;
         this.apiSecret = API_SECRET;
-        this.socket = new WebSocket(`ws://localhost:3000/${API_KEY}`);
-        this.socket.onopen = (data) => {
-            // get the token from the callback
-            this.token = data.token;
+        if(TLS) {
+            const url = `wss://ws.kolabi.pro:3000/${API_KEY}`;
+            this.socket = new WebSocket(url);
+        } else {
+            const url = `ws://ws.kolabi.pro:3000/${API_KEY}`;
+            this.socket = new WebSocket(url);
+        }
 
-            // verify the token
-            const userId = verifyToken(this.token, API_SECRET);
+        // if socket failed then try again 
+        this.socket.onerror = (error) => {
+            console.log('disconnected')
+            this.socket = new WebSocket(`wss://ws.kolabi.pro:3000/${API_KEY}`);
+        }
 
-            // if the token is invalid, close the connection
-            if (!userId) {
-                this.socket.close();
-            }
+        this.socket.onopen = () => {
+            console.log('connected')
 
         };
 
@@ -32,54 +36,60 @@ class LOL {
                     });
                 }
             }
+
+            // if token then verify iitZz
+            if (type === 'token') {
+                this.token = data.token;
+                // verify the token
+                const userId = verifyToken(this.token, API_SECRET);
+                this.userID = userId;
+                // if the token is invalid, close the connection
+                if (!userId) {
+                    this.socket.close();
+                }
+            }
         };
     }
 
     subscribe(channel) {
         const channelKey = `${this.apiKey}-${channel}`;
-
-        // Check if the channel is already subscribed
-        if (!this.channels[channelKey]) {
-            this.channels[channelKey] = [];
-        } else {
-            // If already subscribed, return the existing subscription
-            return {
-                bind: (type, callback) => {
-                    this.channels[channelKey].push((message) => {
-                        if (message.emit_type === type) {
-                            callback(message.data);
-                        }
-                    });
-                }
-            };
-        }
-
-        // Send a subscribe message to the server
+        // send a subscribe message to the server
         const data = {
             type: 'subscribe',
-            channel: channelKey,
+            channel: channel,
             secret: this.apiSecret,
             token: this.token
         };
-
-        // Error handling for socket connection status
-        if (this.socket.readyState === WebSocket.OPEN) {
-            this.socket.send(JSON.stringify(data));
-        } else {
-            console.error('Socket connection is not open. Cannot send subscribe message.');
+        this.socket.send(JSON.stringify(data));
+    
+        // Initialize the channels object if not already initialized
+        if (!this.channels[channelKey]) {
+            this.channels[channelKey] = [];
         }
-
-        // Return the subscription object with bind method
+    
         return {
             bind: (type, callback) => {
-                this.channels[channelKey].push((message) => {
-                    if (message.emit_type === type) {
-                        callback(message.data);
-                    }
+                this.channels[channelKey].push({
+                    type: type,
+                    callback: callback
                 });
+    
+                // Inside the bind function, handle incoming messages based on type
+                this.socket.onmessage = (event) => {
+                    const parsedMessage = JSON.parse(event.data);
+                    const messageType = parsedMessage.emit_type;
+                    const messageData = parsedMessage.content;
+    
+                    this.channels[channelKey].forEach(subscription => {
+                        if (subscription.type === messageType) {
+                            subscription.callback(messageData);
+                        }
+                    });
+                };
             }
         };
     }
+    
 
 
     trigger(channel, type, message) {
@@ -90,10 +100,10 @@ class LOL {
             const data = {
                 type: 'client-publish',
                 emit_type: type,
-                channel: `${this.apiKey}-${channel}`,
+                channel: channel,
                 content: message,
                 secret: this.apiSecret,
-                sender: this.userID,
+                userId: this.userID,
                 token: this.token
             };
 
@@ -102,10 +112,10 @@ class LOL {
             const data = {
                 type: 'publish',
                 emit_type: type,
-                channel: `${this.apiKey}-${channel}`,
+                channel: channel,
                 content: message,
                 secret: this.apiSecret,
-                sender: this.userID,
+                userId: this.userID,
                 token: this.token
             };
 
