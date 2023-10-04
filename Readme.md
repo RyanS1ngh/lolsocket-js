@@ -70,6 +70,11 @@ lol.subscribe('example-channel').bind('message-type', (data) => {
 
 The connection is automatically closed if the received token is invalid.
 
+## Test API Keys
+
+ApiKey "K23AVG0UU8B96WR27612"
+ApiSecret "PG76UNTD4AOOX3RCFNWWUXNP75NJD3H22"
+
 ### Important Notes
 
 * Security: Keep your API keys and secrets secure. Do not expose them in public repositories or client-side code.
