@@ -6,17 +6,16 @@ class LOL {
         this.apiKey = API_KEY;
         this.apiSecret = API_SECRET;
         if(TLS) {
-            const url = `wss://ws.kolabi.pro:4000/${API_KEY}`;
+            const url = `wss:///ws.lolcorp.co.uk:4000/${API_KEY}`;
             this.socket = new WebSocket(url);
         } else {
-            const url = `ws://ws.kolabi.pro:3000/${API_KEY}`;
+            const url = `ws:///ws.lolcorp.co.uk:3000/${API_KEY}`;
             this.socket = new WebSocket(url);
         }
 
         // if socket failed then try again 
         this.socket.onerror = (error) => {
             console.log('disconnected')
-            this.socket = new WebSocket(`wss://ws.kolabi.pro:3000/${API_KEY}`);
         }
 
         this.socket.onopen = () => {
@@ -124,6 +123,22 @@ class LOL {
 
     }
 
-}
+    p2pTrigger(channel, type, message, to) {
+        // first subscribe to the channel
+        this.subscribe(channel);
+            const data = {
+                type: 'publish-to-userId',
+                emit_type: type,
+                channel: channel,
+                content: message,
+                secret: this.apiSecret,
+                uer_id: to,
+                token: this.token
+            };
+
+            this.socket.send(JSON.stringify(data));
+    }
+ }
+
 
 module.exports = LOL;

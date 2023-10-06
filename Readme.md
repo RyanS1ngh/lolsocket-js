@@ -66,6 +66,18 @@ lol.subscribe('example-channel').bind('message-type', (data) => {
     console.log('Received message:', data);
 });
 ```
+### Person to Person Triggers
+First make sure that you store the user's ID in your database. the ID can be found in your Client side's local storage as "LOL_USER_ID"
+
+Then you can trigger events to a specific user by using the triggerToUser method. Events are specified by a type and can carry custom data.
+
+```
+// your logic to get the other user's ID from your database.
+
+// then trigger the event to the other user
+p2pTrigger(Channel, eventType, message, user_id);
+```
+
 ### Closing the Connection
 
 The connection is automatically closed if the received token is invalid.
