@@ -1,0 +1,16 @@
+{
+  "name": "lolsocket-js",
+  "version": "1.0.14",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "Ryan Singh  LOLCORP",
+  "license": "MIT",
+  "description": "LOLSocket-Js is a serverside module that works with Nodejs backend. ",
+  "dependencies": {
+    "ws": "^8.14.2"
+  }
+}
