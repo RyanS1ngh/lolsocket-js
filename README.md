@@ -12,6 +12,8 @@ npm install lolsocket-js
 
 ### Usage
 
+First make an account and create an application to get your API keys from [LOLSocket.com](https://lolsocket.com)
+
 
 ```
 const LOL = require('lolsocket-js');
